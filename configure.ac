@@ -1,9 +1,22 @@
 AC_PREREQ([2.69])
 AC_INIT([AddressBook], [0.1], [david@craven.ch])
 
+AC_CONFIG_MACRO_DIR([m4])
+
 AM_PROG_AR
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz -Wall -Werror])
-LT_INIT()
+
+LT_INIT
+
+AX_CHECK_COMPILE_FLAG([-std=gnu11],
+  [AX_APPEND_FLAG([-std=gnu11])],
+  [AC_MSG_WARN([-std=gnu11 not supported, you may have to set CFLAGS to enable C11 support.])
+])
+
+AX_CHECK_COMPILE_FLAG([-Wall], [AX_APPEND_FLAG([-Wall])])
+# AX_CHECK_COMPILE_FLAG([-Werror], [AX_APPEND_FLAG([-Werror])])
+
+
 
 # Check for programs.
 AC_PROG_CC
