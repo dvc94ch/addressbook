@@ -17,6 +17,8 @@ AX_CHECK_COMPILE_FLAG([-Wall], [AX_APPEND_FLAG([-Wall])])
 # AX_CHECK_COMPILE_FLAG([-Werror], [AX_APPEND_FLAG([-Werror])])
 
 
+AX_VALGRIND_DFLT([sgcheck], [off])
+AX_VALGRIND_CHECK
 
 # Check for programs.
 AC_PROG_CC

@@ -44,6 +44,7 @@ make install
 
 ```sh
 make check
+make -C tests check-valgrind-memcheck
 ```
 
 ### License
