@@ -1,6 +1,9 @@
 AC_PREREQ([2.69])
 AC_INIT([AddressBook], [0.1], [david@craven.ch])
+
+AM_PROG_AR
 AM_INIT_AUTOMAKE([foreign subdir-objects dist-xz -Wall -Werror])
+LT_INIT()
 
 # Check for programs.
 AC_PROG_CC
@@ -17,5 +20,5 @@ else
 fi
 
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_OUTPUT

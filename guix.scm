@@ -46,6 +46,7 @@
      ("check" ,check)
      ("gcc-toolchain-6" ,gcc-toolchain-6)
      ("gdb" ,gdb)
+     ("libtool" ,libtool)
      ("pkg-config" ,pkg-config)
      ("strace" ,strace)
      ("texinfo" ,texinfo)
