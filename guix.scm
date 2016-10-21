@@ -19,9 +19,11 @@
              (guix build-system gnu)
              ((guix licenses) #:prefix license:)
              (gnu packages autotools)
+             (gnu packages check)
              (gnu packages commencement)
              (gnu packages gdb)
              (gnu packages linux)
+             (gnu packages pkg-config)
              (gnu packages texinfo)
              (gnu packages valgrind))
 
@@ -41,8 +43,10 @@
   (native-inputs
    `(("autoconf" ,autoconf)
      ("automake" ,automake)
+     ("check" ,check)
      ("gcc-toolchain-6" ,gcc-toolchain-6)
      ("gdb" ,gdb)
+     ("pkg-config" ,pkg-config)
      ("strace" ,strace)
      ("texinfo" ,texinfo)
      ("valgrind" ,valgrind))))
