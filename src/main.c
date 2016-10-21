@@ -17,12 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "menu.h"
+
+void help(menu_t* menu)
+{
+  printf("\n");
+
+  for (menuItem_t* item = menu->head; item != NULL; item = item->next) {
+    command_t* cmd = item->command;
+    printf("%c --> %s\n", cmd->key, cmd->description);
+  }
+
+  printf("\n");
+}
+
+void quit(menu_t* menu)
+{
+  menu_free(menu);
+  exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char** argv)
 {
-  printf("hello world!\n");
+  menu_t* menu = menu_new();
+  char key;
 
-  return EXIT_SUCCESS;
+  registerCommand(menu, 'h', "Print help", &help);
+  registerCommand(menu, 'q', "Quit", &quit);
+
+  help(menu);
+
+  while (1) {
+    while (!isalnum(key = tolower(getchar())));
+
+    runCommand(menu, key, &help);
+  }
 }
