@@ -27,6 +27,8 @@
 #include "list.h"
 #include "menu.h"
 
+static const char* FILENAME = "addresses.csv";
+
 void new(menu_t* menu, void* addresses)
 {
   char c;
@@ -67,6 +69,46 @@ void print(menu_t* menu, void* addresses)
   list_each(addresses, &address_print);
 }
 
+void load(menu_t* menu, void* addresses)
+{
+  FILE *f = fopen(FILENAME, "r");
+  if (!f) goto error_open;
+
+  address_t *addr;
+  while ((addr = address_read(f))) {
+    list_push(addresses, addr);
+  }
+
+  return;
+
+ error_open:
+  fprintf(stderr, "File couldn't be opened: %s", strerror(errno));
+}
+
+void save(menu_t* menu, void* addresses)
+{
+  FILE *f = fopen(FILENAME, "w+");
+  if (!f) goto error_open;
+
+  for (listItem_t *item = ((list_t*)addresses)->head; item; item = item->next) {
+    address_write(f, (address_t*)item->data);
+  }
+
+  int fd = fileno(f);
+  // C11 fflush only flushes libc buffer to os
+  // POSIX fsync flushes the os buffer too
+  if (fsync(fd) != 0) goto error_write;
+  if (fclose(f) != 0) goto error_write;
+  return;
+
+ error_open:
+  fprintf(stderr, "File couldn't be opened: %s", strerror(errno));
+  return;
+
+ error_write:
+  fprintf(stderr, "Error writing to file: %s", strerror(errno));
+}
+
 void help(menu_t* menu, void* addresses)
 {
   printf("========= Menu =========\n\n");
@@ -99,6 +141,8 @@ int main(int argc, char** argv)
 
   registerCommand(menu, 'n', "New address", &new);
   registerCommand(menu, 'p', "Print addresses", &print);
+  registerCommand(menu, 'l', "Load addresses", &load);
+  registerCommand(menu, 's', "Save addresses", &save);
   registerCommand(menu, 'h', "Print help", &help);
   registerCommand(menu, 'q', "Quit", &quit);
 

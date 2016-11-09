@@ -2,6 +2,7 @@
 *.log
 *.trs
 src/addressbook
+addresses.csv
 tests/check_address
 tests/check_list
 tests/check_menu

@@ -20,6 +20,8 @@
 #ifndef ADDRESS_H
 #define ADDRESS_H
 
+#include <stdio.h>
+
 typedef struct address_ {
   char* name;
   char* street;
@@ -30,6 +32,10 @@ typedef struct address_ {
 address_t* address_new(char* name, char* street, char* zip, char* city);
 
 void address_print(address_t* addr);
+
+void address_write(FILE* file, address_t* addr);
+
+address_t* address_read(FILE* file);
 
 void address_free(address_t* addr);
 

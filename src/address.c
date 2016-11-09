@@ -39,6 +39,30 @@ void address_print(address_t* addr)
   printf("%s %s\n\n", addr->zip, addr->city);
 }
 
+void address_write(FILE* file, address_t* addr)
+{
+  fprintf(file, "%s,%s,%s,%s\n", addr->name, addr->street,
+          addr->zip, addr->city);
+}
+
+address_t* address_read(FILE* file)
+{
+  char buffer[4][100];
+  int c;
+  for (int i = 0, j = 0; i < 4 && j < 100 && (c = fgetc(file)); j++) {
+    if (c == '\n') {
+      return address_new(buffer[0], buffer[1], buffer[2], buffer[3]);
+    } else if (c == ',') {
+      i++;
+      j = -1;
+    } else {
+      buffer[i][j] = c;
+    }
+  }
+
+  return NULL;
+}
+
 void address_free(address_t* addr)
 {
   free(addr->name);
