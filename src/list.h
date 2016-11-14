@@ -33,6 +33,7 @@ list_t* list_new();
 void list_push(list_t* list, void* data);
 void* list_pop(list_t* list);
 void list_each(list_t* list, void (*callback)(void* data));
+list_t* list_sort(list_t* list, int (*cmp)(void* d1, void* d2));
 void list_free(list_t* list, void (*free_data)(void* data));
 
 #endif /* LIST_H */

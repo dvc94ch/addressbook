@@ -114,6 +114,14 @@ void save(appData_t *app)
   fprintf(stderr, "Error writing to file: %s", strerror(errno));
 }
 
+void sort_by_name(appData_t *app) {
+  app->addresses = list_sort(app->addresses, &address_cmp_name);
+}
+
+void sort_by_zip(appData_t *app) {
+  app->addresses = list_sort(app->addresses, &address_cmp_zip);
+}
+
 void help(appData_t *app)
 {
   printf("========= Menu =========\n\n");
@@ -151,6 +159,8 @@ int main(int argc, char **argv)
   registerCommand(app.menu, 'p', "Print addresses", &print);
   registerCommand(app.menu, 'l', "Load addresses", &load);
   registerCommand(app.menu, 's', "Save addresses", &save);
+  registerCommand(app.menu, '1', "Sort by name", &sort_by_name);
+  registerCommand(app.menu, '2', "Sort by zip", &sort_by_zip);
   registerCommand(app.menu, 'h', "Print help", &help);
   registerCommand(app.menu, 'q', "Quit", &quit);
 

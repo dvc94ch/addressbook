@@ -71,3 +71,13 @@ void address_free(address_t* addr)
   free(addr->city);
   free(addr);
 }
+
+int address_cmp_name(address_t* a1, address_t* a2)
+{
+  return strcmp(a1->name, a2->name);
+}
+
+int address_cmp_zip(address_t* a1, address_t* a2)
+{
+  return strcmp(a1->zip, a2->zip);
+}

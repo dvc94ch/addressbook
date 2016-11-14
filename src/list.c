@@ -26,10 +26,16 @@ list_t* list_new(void) {
   return list;
 }
 
+listItem_t* listItem_new(void* data) {
+  listItem_t* item = (listItem_t*)malloc(sizeof(listItem_t));
+  item->data = data;
+  item->next = NULL;
+  return item;
+}
+
 void list_push(list_t* list, void* data) {
   if (list != NULL) {
-    listItem_t* item = (listItem_t*)malloc(sizeof(listItem_t));
-    item->data = data;
+    listItem_t *item = listItem_new(data);
     item->next = list->head;
     list->head = item;
   }
@@ -50,6 +56,51 @@ void list_each(list_t* list, void (*callback)(void*)) {
   for (listItem_t* item = list->head; item != NULL; item = item->next) {
     callback(item->data);
   }
+}
+
+list_t *list_sort(list_t* list, int (*cmp)(void*, void*)) {
+  list_t *sorted_list;
+  void *data;
+
+  // list can be NULL or empty
+  if (!list || !list->head) {
+    return list;
+  }
+  // list contains at least one element
+
+  sorted_list = list_new();
+  list_push(sorted_list, list_pop(list));
+
+  // sorted_list has at least one element
+  while ((data = list_pop(list))) {
+    listItem_t *next;
+    for (listItem_t *item = sorted_list->head; item; item = item->next) {
+      int res = cmp(data, item->data);
+      // push when smaller than first element
+      if (res <= 0 && sorted_list->head == item) {
+        list_push(sorted_list, data);
+        break;
+      }
+      // append when no elements left
+      if (!item->next) {
+        item->next = listItem_new(data);
+        break;
+      }
+
+      // item->next != NULL
+      int res_next = cmp(data, item->next->data);
+      if (res >= 0 && res_next <= 0) {
+        next = item->next;
+        item->next = listItem_new(data);
+        item->next->next = next;
+        break;
+      }
+    }
+  }
+
+  free(list);
+
+  return sorted_list;
 }
 
 void list_free(list_t* list, void (*data_free)(void*)) {

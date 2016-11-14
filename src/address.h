@@ -39,4 +39,7 @@ address_t* address_read(FILE* file);
 
 void address_free(address_t* addr);
 
+int address_cmp_name(address_t* a1, address_t* a2);
+int address_cmp_zip(address_t* a1, address_t* a2);
+
 #endif /* ADDRESS_H */
