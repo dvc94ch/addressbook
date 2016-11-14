@@ -66,11 +66,11 @@ void runCommand(menu_t* menu, void* data, char key, commandCb_t fallback)
   for (menuItem_t* item = menu->head; item != NULL; item = item->next) {
     command_t* cmd = item->command;
     if (cmd->key == key) {
-      return (*cmd->func)(menu, data);
+      return (*cmd->func)(data);
     }
   }
 
-  (*fallback)(menu, data);
+  (*fallback)(data);
 }
 
 /*

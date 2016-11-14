@@ -21,7 +21,7 @@
 #define MENU_H
 
 typedef struct menu_* menuPtr_t;
-typedef void (*commandCb_t)(menuPtr_t menu, void* data);
+typedef void (*commandCb_t)(void* data);
 
 typedef struct command_ {
   char key;

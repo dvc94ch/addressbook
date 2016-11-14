@@ -27,9 +27,14 @@
 #include "list.h"
 #include "menu.h"
 
-static const char* FILENAME = "addresses.csv";
+typedef struct {
+  char *filename;
+  menu_t *menu;
+  list_t *addresses;
+} appData_t;
 
-void new(menu_t* menu, void* addresses)
+
+void new(appData_t *app)
 {
   char c;
   // Flush input buffer.
@@ -56,7 +61,7 @@ void new(menu_t* menu, void* addresses)
   city[strcspn(city, "\n")] = 0;
 
   address_t* addr = address_new(name, street, zip, city);
-  list_push(addresses, addr);
+  list_push(app->addresses, addr);
 
   return address_print(addr);
 
@@ -64,19 +69,19 @@ void new(menu_t* menu, void* addresses)
   fprintf(stderr, "Buffer overflow.");
 }
 
-void print(menu_t* menu, void* addresses)
+void print(appData_t *app)
 {
-  list_each(addresses, &address_print);
+  list_each(app->addresses, &address_print);
 }
 
-void load(menu_t* menu, void* addresses)
+void load(appData_t *app)
 {
-  FILE *f = fopen(FILENAME, "r");
+  FILE *f = fopen(app->filename, "r");
   if (!f) goto error_open;
 
   address_t *addr;
   while ((addr = address_read(f))) {
-    list_push(addresses, addr);
+    list_push(app->addresses, addr);
   }
 
   return;
@@ -85,12 +90,12 @@ void load(menu_t* menu, void* addresses)
   fprintf(stderr, "File couldn't be opened: %s", strerror(errno));
 }
 
-void save(menu_t* menu, void* addresses)
+void save(appData_t *app)
 {
-  FILE *f = fopen(FILENAME, "w+");
+  FILE *f = fopen(app->filename, "w+");
   if (!f) goto error_open;
 
-  for (listItem_t *item = ((list_t*)addresses)->head; item; item = item->next) {
+  for (listItem_t *item = (app->addresses)->head; item; item = item->next) {
     address_write(f, (address_t*)item->data);
   }
 
@@ -109,11 +114,11 @@ void save(menu_t* menu, void* addresses)
   fprintf(stderr, "Error writing to file: %s", strerror(errno));
 }
 
-void help(menu_t* menu, void* addresses)
+void help(appData_t *app)
 {
   printf("========= Menu =========\n\n");
 
-  for (menuItem_t* item = menu->head; item != NULL; item = item->next) {
+  for (menuItem_t* item = app->menu->head; item != NULL; item = item->next) {
     command_t* cmd = item->command;
     printf("%c --> %s\n", cmd->key, cmd->description);
   }
@@ -121,39 +126,42 @@ void help(menu_t* menu, void* addresses)
   printf("\n========================\n");
 }
 
-void unknown_command(menu_t* menu, void* addresses)
+void unknown_command(appData_t *app)
 {
   printf("Unknown command, press h for help.");
 }
 
-void quit(menu_t* menu, void* addresses)
+void quit(appData_t *app)
 {
-  list_free(addresses, &address_free);
-  menu_free(menu);
+  list_free(app->addresses, &address_free);
+  menu_free(app->menu);
   exit(EXIT_SUCCESS);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-  menu_t* menu = menu_new();
-  list_t* addresses = list_new();
+  appData_t app;
+  app.filename = "addresses.csv";
+  app.menu = menu_new();
+  app.addresses = list_new();
+
   char key;
 
-  registerCommand(menu, 'n', "New address", &new);
-  registerCommand(menu, 'p', "Print addresses", &print);
-  registerCommand(menu, 'l', "Load addresses", &load);
-  registerCommand(menu, 's', "Save addresses", &save);
-  registerCommand(menu, 'h', "Print help", &help);
-  registerCommand(menu, 'q', "Quit", &quit);
+  registerCommand(app.menu, 'n', "New address", &new);
+  registerCommand(app.menu, 'p', "Print addresses", &print);
+  registerCommand(app.menu, 'l', "Load addresses", &load);
+  registerCommand(app.menu, 's', "Save addresses", &save);
+  registerCommand(app.menu, 'h', "Print help", &help);
+  registerCommand(app.menu, 'q', "Quit", &quit);
 
   // Disable stdout buffering to avoid having to call fflush all the time.
   setbuf(stdout, NULL);
-  help(menu, addresses);
+  help(&app);
   printf("Command: ");
 
   while ((key = getchar())) {
     if (isalnum(key)) {
-      runCommand(menu, addresses, tolower(key), &unknown_command);
+      runCommand(app.menu, &app, tolower(key), &unknown_command);
       printf("Command: ");
     }
   }
